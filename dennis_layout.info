@@ -1,0 +1,6 @@
+name = Dennis Layout
+description = "Provides the ability to turn the sidebar off via a disable field (context)"
+core = 7.x
+package = Dennis Distro (Optional)
+
+dependencies[] = context

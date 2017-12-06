@@ -1,0 +1,193 @@
+<?php
+/**
+ * @file
+ * Dennis Layout module code.
+ */
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function dennis_layout_ctools_plugin_api($module, $api) {
+  if ($module == 'context' && $api == 'plugins') {
+    return array('version' => 3);
+  }
+}
+
+/**
+ * Creates Sidebar deactivation field.
+ */
+function dennis_layout_create_sidebar_deactivation_field($bundles) {
+  if (!is_array($bundles)) {
+    $bundles = array($bundles);
+  }
+
+  if (!field_info_field('field_sidebar_off')) {
+    // Create the field base.
+    $field = array(
+      'field_name' => 'field_sidebar_off',
+      'type' => 'list_boolean',
+      'settings' => array(
+        'allowed_values' => array(
+          0 => '',
+          1 => '',
+        ),
+        'allowed_values_function' => '',
+      ),
+    );
+    field_create_field($field);
+  }
+
+  foreach ($bundles as $bundle) {
+    if (!field_info_instance('node', 'field_sidebar_off', $bundle)) {
+      // Create the field instance on the bundle.
+      $instance = array(
+        'field_name' => 'field_sidebar_off',
+        'entity_type' => 'node',
+        'label' => 'Deactivate Sidebar',
+        'bundle' => $bundle,
+        'widget' => array(
+          'type' => 'options_onoff',
+          'settings' => array('display_label' => 1),
+          'weight' => 20,
+        ),
+        'description' => 'If this field is checked, the sidebar deactivation Context hides the sidebar on a node level.',
+        'display' => array(
+          'default' => array(
+            'label' => 'above',
+            'settings' => array(),
+            'type' => 'hidden',
+            'weight' => 20,
+          ),
+        ),
+      );
+      field_create_instance($instance);
+      drupal_set_message(t('Deactivate Sidebar field added for %type.', array('%type' => $bundle)));
+    }
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function dennis_layout_permission() {
+  return array(
+    'deactivate sidebar' => array(
+      'title' => t('Deactivate Sidebar'),
+      'description' => t('Access the Sidebar Deactivation field on nodes.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function dennis_layout_form_node_form_alter(&$form, $form_state, $form_id) {
+  // Hide the sidebar deactivation field if user has no permission.
+  if (!user_access('deactivate sidebar') && !empty($form['field_sidebar_off'])) {
+    $form['field_sidebar_off']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_context_plugins().
+ */
+function dennis_layout_context_plugins() {
+  $plugins = array();
+  $plugins['sidebar_off'] = array(
+    'handler' => array(
+      'path'   => drupal_get_path('module', 'dennis_layout') . '/plugins',
+      'file'   => 'context_condition_sidebar_off.inc',
+      'class'  => 'context_condition_sidebar_off',
+      'parent' => 'context_condition',
+    ),
+  );
+
+  return $plugins;
+}
+
+/**
+ * Implements hook_context_registry().
+ */
+function dennis_layout_context_registry() {
+  $registry['conditions'] = array(
+    'sidebar_off' => array(
+      'title'       => t('Sidebar deactivation field checked'),
+      'description' => t('Sidebar deactivation based on node level field value'),
+      'plugin'      => 'sidebar_off',
+    ),
+  );
+
+  return $registry;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function dennis_layout_node_view($node, $view_mode, $langcode) {
+  if ($plugin = context_get_plugin('condition', 'sidebar_off')) {
+    $plugin->execute($node);
+  }
+}
+
+/**
+ * Determine whether the sidebar deactivation field is checked or not.
+ *
+ * @param object $node
+ * The node object.
+ */
+function dennis_layout_sidebar_off($node) {
+  $sidebar_off = FALSE;
+
+  // Condition: Sidebar deactivation field is checked on node.
+  if (!empty($node->field_sidebar_off) && $node->field_sidebar_off[LANGUAGE_NONE][0]['value'] == 1) {
+    $sidebar_off = TRUE;
+  }
+
+  return $sidebar_off;
+}
+
+/**
+ * @param $context_tag
+ * @param $content_types
+ *
+ * Create sidebar disable context.
+ */
+function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable_regions) {
+  $context_region_list = array();
+
+  foreach (list_themes(TRUE) as $theme_name => $theme_settings) {
+    if ($theme_settings->status == 1) {
+      foreach (system_region_list($theme_name) as $region_name => $region_settings) {
+        if (in_array($region_name, $disable_regions)) {
+          $context_region_list[$theme_name]['disable'][$region_name] = $region_name;
+        }
+      }
+    }
+  }
+
+  $context = new stdClass();
+  $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
+  $context->api_version = 3;
+  $context->name = 'disable_sidebar';
+  $context->description = 'Disable sidebar on node level';
+  $context->tag = $tag;
+  $context->conditions = array(
+    'node' => array(
+      'values' => $content_types,
+      'options' => array(
+        'node_form' => '0',
+      ),
+    ),
+    'sidebar_off' => array(
+      'values' => array(
+        1 => 1,
+      ),
+    ),
+  );
+  $context->reactions = array(
+    'region' => $context_region_list,
+  );
+  $context->condition_mode = 1;
+
+  context_save($context);
+}
