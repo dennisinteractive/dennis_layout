@@ -158,45 +158,50 @@ function dennis_layout_sidebar_off($node) {
  * Create sidebar disable context.
  */
 function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable_regions) {
-  $context_region_list = array();
+  if (context_load('disable_sidebar')) {
+    drupal_set_message(t('disable_sidebar context already exists, aborting.'));
+  }
+  else {
+    $context_region_list = array();
 
-  // Go through all themes and find what regions to include in the context.
-  foreach (list_themes(TRUE) as $theme_name => $theme_settings) {
-    foreach (system_region_list($theme_name) as $region_name => $region_settings) {
-      if (in_array($region_name, $disable_regions)) {
-        $context_region_list[$theme_name]['disable'][$region_name] = $region_name;
+    // Go through all themes and find what regions to include in the context.
+    foreach (list_themes(TRUE) as $theme_name => $theme_settings) {
+      foreach (system_region_list($theme_name) as $region_name => $region_settings) {
+        if (in_array($region_name, $disable_regions)) {
+          $context_region_list[$theme_name]['disable'][$region_name] = $region_name;
+        }
       }
     }
-  }
 
-  // Create the context.
-  $context = new stdClass();
-  $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
-  $context->api_version = 3;
-  $context->name = 'disable_sidebar';
-  $context->description = 'Disable sidebar on node level';
-  $context->tag = $tag;
-  $context->conditions = array(
-    'node' => array(
-      'values' => $content_types,
-      'options' => array(
-        'node_form' => '0',
+    // Create the context.
+    $context = new stdClass();
+    $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
+    $context->api_version = 3;
+    $context->name = 'disable_sidebar';
+    $context->description = 'Disable sidebar on node level';
+    $context->tag = $tag;
+    $context->conditions = array(
+      'node' => array(
+        'values' => $content_types,
+        'options' => array(
+          'node_form' => '0',
+        ),
       ),
-    ),
-    'sidebar_off' => array(
-      'values' => array(
-        1 => 1,
+      'sidebar_off' => array(
+        'values' => array(
+          1 => 1,
+        ),
       ),
-    ),
-  );
-  $context->reactions = array(
-    'region' => $context_region_list,
-  );
-  $context->condition_mode = 1;
+    );
+    $context->reactions = array(
+      'region' => $context_region_list,
+    );
+    $context->condition_mode = 1;
 
-  if (context_save($context)) {
-    drupal_set_message(t('disable_sidebar context added successfully.'));
-  } else {
-    drupal_set_message(t('disable_sidebar context creation failed!'));
+    if (context_save($context)) {
+      drupal_set_message(t('disable_sidebar context added successfully.'));
+    } else {
+      drupal_set_message(t('disable_sidebar context creation failed!'));
+    }
   }
 }
