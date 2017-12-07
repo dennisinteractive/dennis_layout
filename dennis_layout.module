@@ -60,8 +60,13 @@ function dennis_layout_create_sidebar_deactivation_field($bundles) {
           ),
         ),
       );
-      field_create_instance($instance);
-      drupal_set_message(t('Deactivate Sidebar field added for %type.', array('%type' => $bundle)));
+
+      if (field_create_instance($instance)) {
+        drupal_set_message(t('Deactivate Sidebar field added for %type.', array('%type' => $bundle)));
+      }
+      else {
+        drupal_set_message(t('Deactivate Sidebar field creation for %type failed!', array('%type' => $bundle)));
+      }
     }
   }
 }
@@ -155,16 +160,16 @@ function dennis_layout_sidebar_off($node) {
 function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable_regions) {
   $context_region_list = array();
 
+  // Go through all themes and find what regions to include in the context.
   foreach (list_themes(TRUE) as $theme_name => $theme_settings) {
-    if ($theme_settings->status == 1) {
-      foreach (system_region_list($theme_name) as $region_name => $region_settings) {
-        if (in_array($region_name, $disable_regions)) {
-          $context_region_list[$theme_name]['disable'][$region_name] = $region_name;
-        }
+    foreach (system_region_list($theme_name) as $region_name => $region_settings) {
+      if (in_array($region_name, $disable_regions)) {
+        $context_region_list[$theme_name]['disable'][$region_name] = $region_name;
       }
     }
   }
 
+  // Create the context.
   $context = new stdClass();
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -189,5 +194,9 @@ function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable
   );
   $context->condition_mode = 1;
 
-  context_save($context);
+  if (context_save($context)) {
+    drupal_set_message(t('disable_sidebar context added successfully.'));
+  } else {
+    drupal_set_message(t('disable_sidebar context creation failed!'));
+  }
 }
