@@ -210,8 +210,11 @@ function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable
  * Implements hook_dennis_datalayer_node_options().
  *
  * Provide single_column token to dennis_datalayer module.
+ * Cases 29104, 29034.
  */
-function dennis_layout_dennis_datalayer_node_options($node_options_tokens) {
+function dennis_layout_dennis_datalayer_node_options() {
+  $node_options_tokens = array();
+
   if ($node = menu_get_object()) {
     if (!empty($node->field_sidebar_off) && $node->field_sidebar_off[LANGUAGE_NONE][0]['value'] == 1) {
       $node_options_tokens['single_column'] = 1;
