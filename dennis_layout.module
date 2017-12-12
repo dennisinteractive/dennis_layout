@@ -216,8 +216,12 @@ function dennis_layout_dennis_datalayer_node_options() {
   $node_options_tokens = array();
 
   if ($node = menu_get_object()) {
+    $node_options_tokens['single_column'] = array(
+      'value' => 0,
+      'label' => 'single column',
+    );
     if (!empty($node->field_sidebar_off) && $node->field_sidebar_off[LANGUAGE_NONE][0]['value'] == 1) {
-      $node_options_tokens['single_column'] = 1;
+      $node_options_tokens['single_column']['value'] = 1;
     }
   }
   return $node_options_tokens;
