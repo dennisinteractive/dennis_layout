@@ -4,3 +4,23 @@
  * @file
  * dennis_layout.install
  */
+
+function dennis_layout_install() {
+
+  // Add sidebar deactivation field.
+  $content_types = array(
+    'article' => 'article',
+    'review' => 'review',
+  );
+  dennis_layout_create_sidebar_deactivation_field(array_keys($content_types));
+
+  // Add sidebar deactivation context.
+  $disable_regions = array(
+    'sidebar_first',
+    'sidebar_first_alt',
+    'sidebar_second',
+    'sidebar_second_alt',
+  );
+  dennis_layout_create_sidebar_off_context('expertreviews', $content_types, $disable_regions);
+
+}
