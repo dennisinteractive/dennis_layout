@@ -29,38 +29,42 @@ function dennis_layout_create_sidebar_deactivation_field($bundles) {
         field_create_field($field_bases[$key]);
       }
     }
+  }
+  else {
+    drupal_set_message(t('field_sidebar_off base already exists.'));
+  }
 
-    foreach ($bundles as $bundle) {
-      if (!field_info_instance('node', 'field_sidebar_off', $bundle)) {
-        // Create the field instance on the bundle.
-        $instance = [
-          'field_name' => 'field_sidebar_off',
-          'entity_type' => 'node',
-          'label' => 'Deactivate Sidebar',
-          'bundle' => $bundle,
-          'widget' => [
-            'type' => 'options_onoff',
-            'settings' => ['display_label' => 1],
-            'weight' => 55,
+  foreach ($bundles as $bundle) {
+    if (!field_info_instance('node', 'field_sidebar_off', $bundle)) {
+      // Create the field instance on the bundle.
+      $instance = [
+        'field_name' => 'field_sidebar_off',
+        'entity_type' => 'node',
+        'label' => 'Deactivate Sidebar',
+        'bundle' => $bundle,
+        'widget' => [
+          'type' => 'options_onoff',
+          'settings' => ['display_label' => 1],
+        ],
+        'description' => 'If this field is checked, the sidebar deactivation Context hides the sidebar on a node level.',
+        'display' => [
+          'default' => [
+            'label' => 'above',
+            'settings' => [],
+            'type' => 'hidden',
           ],
-          'description' => 'If this field is checked, the sidebar deactivation Context hides the sidebar on a node level.',
-          'display' => [
-            'default' => [
-              'label' => 'above',
-              'settings' => [],
-              'type' => 'hidden',
-              'weight' => 20,
-            ],
-          ],
-        ];
+        ],
+      ];
 
-        if (field_create_instance($instance)) {
-          drupal_set_message(t('Deactivate Sidebar field added for %type.', ['%type' => $bundle]));
-        }
-        else {
-          drupal_set_message(t('Deactivate Sidebar field creation for %type failed!', ['%type' => $bundle]));
-        }
+      if (field_create_instance($instance)) {
+        drupal_set_message(t('Deactivate Sidebar field added for %type.', ['%type' => $bundle]));
       }
+      else {
+        drupal_set_message(t('Deactivate Sidebar field creation for %type failed!', ['%type' => $bundle]));
+      }
+    }
+    else {
+      drupal_set_message(t('Deactivate Sidebar field already added for %type.', ['%type' => $bundle]));
     }
   }
 }

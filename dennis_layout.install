@@ -5,6 +5,10 @@
  * dennis_layout.install
  */
 
+/**
+ * Implements hook_install();
+ */
+
 function dennis_layout_install() {
 
   // Add sidebar deactivation field.
