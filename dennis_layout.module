@@ -168,6 +168,6 @@ function dennis_layout_views_default_views_alter(&$views) {
  * Fix to ensure flag types are available when module is first enabled.
  * @see https://www.drupal.org/project/flag/issues/1925922
  */
-function dennis_layout_flag_init() {
+function dennis_layout_init() {
   module_load_include('inc', 'flag', 'flag.flag');
 }
