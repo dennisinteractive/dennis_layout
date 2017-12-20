@@ -138,17 +138,17 @@ function dennis_layout_views_default_views_alter(&$views) {
   if (isset($views['content_administration'])) {
     $handler =& $views['content_administration']->display['default']->handler;
     /* Filter criterion: Flags: Flagged */
-    $handler->display->display_options['filters']['flagged']['id'] = 'flagged';
-    $handler->display->display_options['filters']['flagged']['table'] = 'flagging';
-    $handler->display->display_options['filters']['flagged']['field'] = 'flagged';
-    $handler->display->display_options['filters']['flagged']['relationship'] = 'flag_content_rel';
-    $handler->display->display_options['filters']['flagged']['value'] = 'All';
-    $handler->display->display_options['filters']['flagged']['exposed'] = TRUE;
-    $handler->display->display_options['filters']['flagged']['expose']['operator_id'] = '';
-    $handler->display->display_options['filters']['flagged']['expose']['label'] = 'Sidebar disabled';
-    $handler->display->display_options['filters']['flagged']['expose']['operator'] = 'flagged_op';
-    $handler->display->display_options['filters']['flagged']['expose']['identifier'] = 'flagged';
-    $handler->display->display_options['filters']['flagged']['expose']['remember_roles'] = array(
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['id'] = 'flagged_disable_sidebar';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['table'] = 'flagging';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['field'] = 'flagged';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['relationship'] = 'flag_content_rel_disable_sidebar';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['value'] = 'All';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['exposed'] = TRUE;
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['expose']['operator_id'] = '';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['expose']['label'] = 'Sidebar disabled';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['expose']['operator'] = 'flagged_disable_sidebar';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['expose']['identifier'] = 'flagged_disable_sidebar';
+    $handler->display->display_options['filters']['flagged_disable_sidebar']['expose']['remember_roles'] = array(
       2 => '2',
       1 => 0,
       3 => 0,
@@ -159,11 +159,19 @@ function dennis_layout_views_default_views_alter(&$views) {
     );
 
     /* Relationship: Flags: disable_sidebar */
-    $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
-    $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'node';
-    $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
-    $handler->display->display_options['relationships']['flag_content_rel']['required'] = 0;
-    $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'disable_sidebar';
-    $handler->display->display_options['relationships']['flag_content_rel']['user_scope'] = 'any';
+    $handler->display->display_options['relationships']['flag_content_rel_disable_sidebar']['id'] = 'flag_content_rel_disable_sidebar';
+    $handler->display->display_options['relationships']['flag_content_rel_disable_sidebar']['table'] = 'node';
+    $handler->display->display_options['relationships']['flag_content_rel_disable_sidebar']['field'] = 'flag_content_rel_disable_sidebar';
+    $handler->display->display_options['relationships']['flag_content_rel_disable_sidebar']['required'] = 0;
+    $handler->display->display_options['relationships']['flag_content_rel_disable_sidebar']['flag'] = 'disable_sidebar';
+    $handler->display->display_options['relationships']['flag_content_rel_disable_sidebar']['user_scope'] = 'any';
   }
+}
+
+/**
+ * Fix to ensure flag types are available when module is first enabled.
+ * @see https://www.drupal.org/project/flag/issues/1925922
+ */
+function dennis_layout_flag_init() {
+  module_load_include('inc', 'flag', 'flag.flag');
 }
