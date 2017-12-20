@@ -22,10 +22,10 @@ function dennis_layout_flag_default_flags() {
     'entity_type' => 'node',
     'title' => 'Disable Sidebar',
     'global' => TRUE,
-    'types' => array(
-      0 => 'article',
-      1 => 'review',
-    ),
+    'types' => variable_get('dennis_layout_flag_disable_content_types', array(
+      'article',
+      'review',
+    )),
     'flag_short' => 'Disable Sidebar',
     'flag_long' => 'Disable the sidebar on this node',
     'flag_message' => 'Sidebar has been disabled on this node',
