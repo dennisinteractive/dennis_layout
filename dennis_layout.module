@@ -56,7 +56,7 @@ function dennis_layout_flag_default_flags() {
  *
  * Create sidebar disable context.
  */
-function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable_regions) {
+function dennis_layout_create_sidebar_off_context($content_types, $disable_regions) {
   if (context_load('disable_sidebar')) {
     drupal_set_message(t('disable_sidebar context already exists, aborting.'));
   }
@@ -78,7 +78,7 @@ function dennis_layout_create_sidebar_off_context($tag, $content_types, $disable
     $context->api_version = 3;
     $context->name = 'disable_sidebar';
     $context->description = 'Disable sidebar on node level';
-    $context->tag = $tag;
+    $context->tag = '';
     $context->conditions = array(
       'node' => array(
         'values' => $content_types,
@@ -137,37 +137,33 @@ function dennis_layout_dennis_datalayer_node_options() {
 function dennis_layout_views_default_views_alter(&$views) {
   if (isset($views['content_administration'])) {
     $handler =& $views['content_administration']->display['default']->handler;
-    /* Filter criterion: Content: Deactivate Sidebar (field_sidebar_off) */
-    $handler->display->display_options['filters']['field_sidebar_off_value']['id'] = 'field_sidebar_off_value';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['table'] = 'field_data_field_sidebar_off';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['field'] = 'field_sidebar_off_value';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['value'] = array(
-      0 => '0',
-      1 => '1',
-    );
-    $handler->display->display_options['filters']['field_sidebar_off_value']['exposed'] = TRUE;
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['operator_id'] = 'field_sidebar_off_value_op';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['label'] = 'No right column';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['operator'] = 'field_sidebar_off_value_op';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['identifier'] = 'field_sidebar_off_value';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['remember'] = TRUE;
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['remember_roles'] = array(
+    /* Filter criterion: Flags: Flagged */
+    $handler->display->display_options['filters']['flagged']['id'] = 'flagged';
+    $handler->display->display_options['filters']['flagged']['table'] = 'flagging';
+    $handler->display->display_options['filters']['flagged']['field'] = 'flagged';
+    $handler->display->display_options['filters']['flagged']['relationship'] = 'flag_content_rel';
+    $handler->display->display_options['filters']['flagged']['value'] = 'All';
+    $handler->display->display_options['filters']['flagged']['exposed'] = TRUE;
+    $handler->display->display_options['filters']['flagged']['expose']['operator_id'] = '';
+    $handler->display->display_options['filters']['flagged']['expose']['label'] = 'Sidebar disabled';
+    $handler->display->display_options['filters']['flagged']['expose']['operator'] = 'flagged_op';
+    $handler->display->display_options['filters']['flagged']['expose']['identifier'] = 'flagged';
+    $handler->display->display_options['filters']['flagged']['expose']['remember_roles'] = array(
       2 => '2',
-      1 => '1',
-      3 => '3',
-      5 => '5',
-      6 => '6',
-      4 => '4',
-      7 => '7',
+      1 => 0,
+      3 => 0,
+      5 => 0,
+      6 => 0,
+      4 => 0,
+      7 => 0,
     );
-    $handler->display->display_options['filters']['field_sidebar_off_value']['expose']['reduce'] = TRUE;
-    $handler->display->display_options['filters']['field_sidebar_off_value']['group_info']['label'] = 'Deactivate Sidebar (field_sidebar_off)';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['group_info']['identifier'] = 'field_sidebar_off_value';
-    $handler->display->display_options['filters']['field_sidebar_off_value']['group_info']['remember'] = FALSE;
-    $handler->display->display_options['filters']['field_sidebar_off_value']['group_info']['group_items'] = array(
-      1 => array(),
-      2 => array(),
-      3 => array(),
-    );
+
+    /* Relationship: Flags: disable_sidebar */
+    $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
+    $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'node';
+    $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
+    $handler->display->display_options['relationships']['flag_content_rel']['required'] = 0;
+    $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'disable_sidebar';
+    $handler->display->display_options['relationships']['flag_content_rel']['user_scope'] = 'any';
   }
 }
