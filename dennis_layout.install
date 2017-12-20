@@ -19,10 +19,10 @@ function dennis_layout_install() {
   }
 
   // Add sidebar deactivation field.
-  $content_types = array(
-    'article' => 'article',
-    'review' => 'review',
-  );
+  $content_types = variable_get('dennis_layout_flag_disable_content_types', array(
+    'article',
+    'review',
+  ));
 
   // Add sidebar deactivation context.
   $disable_regions = array(
@@ -31,6 +31,6 @@ function dennis_layout_install() {
     'sidebar_second',
     'sidebar_second_alt',
   );
-  dennis_layout_create_sidebar_off_context('expertreviews', $content_types, $disable_regions);
+  dennis_layout_create_sidebar_off_context($content_types, $disable_regions);
 
 }
