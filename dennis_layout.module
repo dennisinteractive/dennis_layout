@@ -114,18 +114,14 @@ function dennis_layout_create_sidebar_off_context($content_types, $disable_regio
  * Provide single_column token to dennis_datalayer module.
  * Cases 29104, 29034.
  */
-function dennis_layout_dennis_datalayer_node_options() {
+function dennis_layout_dennis_datalayer_node_options($data = array()) {
   $node_options_tokens = array();
 
-  if ($node = menu_get_object()) {
-    $node_options_tokens['single_column'] = array(
-      'value' => 0,
-      'label' => 'single column',
-    );
-    if (!empty($node->field_sidebar_off) && $node->field_sidebar_off[LANGUAGE_NONE][0]['value'] == 1) {
-      $node_options_tokens['single_column']['value'] = 1;
-    }
-  }
+  $node_options_tokens['single_column'] = [
+    'value' => flag_get_flag('disable_sidebar')->is_flagged($data['node']->nid) ? 1 : 0,
+    'label' => 'single column',
+  ];
+
   return $node_options_tokens;
 }
 
