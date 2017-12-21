@@ -115,14 +115,18 @@ function dennis_layout_create_sidebar_off_context($content_types, $disable_regio
  * Cases 29104, 29034.
  */
 function dennis_layout_dennis_datalayer_node_options($data = array()) {
-  $node_options_tokens = array();
+  $node_options = array();
 
-  $node_options_tokens['single_column'] = [
+  if (empty($data['node']) || path_is_admin(current_path())) {
+    return $node_options;
+  }
+
+  $node_options['single_column'] = [
     'value' => flag_get_flag('disable_sidebar')->is_flagged($data['node']->nid) ? 1 : 0,
     'label' => 'single column',
   ];
 
-  return $node_options_tokens;
+  return $node_options;
 }
 
 /**
