@@ -10,13 +10,19 @@
  */
 
 function dennis_layout_install() {
+  // Set default permissions.
+  $roles = array('administrator', 'data manager');
+  foreach ($roles as $role_name) {
+    if ($role = user_role_load_by_name($role_name)) {
+      user_role_grant_permissions($role->rid, array('flag disable_sidebar', 'unflag disable_sidebar'));
+    }
+  }
 
   // Add sidebar deactivation field.
-  $content_types = array(
-    'article' => 'article',
-    'review' => 'review',
-  );
-  dennis_layout_create_sidebar_deactivation_field(array_keys($content_types));
+  $content_types = variable_get('dennis_layout_flag_disable_content_types', array(
+    'article',
+    'review',
+  ));
 
   // Add sidebar deactivation context.
   $disable_regions = array(
@@ -25,6 +31,6 @@ function dennis_layout_install() {
     'sidebar_second',
     'sidebar_second_alt',
   );
-  dennis_layout_create_sidebar_off_context('expertreviews', $content_types, $disable_regions);
+  dennis_layout_create_sidebar_off_context($content_types, $disable_regions);
 
 }
