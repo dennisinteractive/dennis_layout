@@ -47,35 +47,41 @@ function dennis_layout_flag_default_flags() {
     'access_uid' => '',
     'api_version' => 3,
   );
-  $flags['disable_monetizer_widgets'] = array(
-    'entity_type' => 'node',
-    'title' => 'Disable M101 Widgets',
-    'global' => 1,
-    'types' => variable_get('dennis_layout_flag_disable_m_widget_nodes', array(
-      'article',
-      'review',
-    )),
-    'flag_short' => 'Disable M101 Widgets',
-    'flag_long' => 'Disable the M101 Widgets on this node',
-    'flag_message' => 'M101 Widgets have been disabled on this node',
-    'unflag_short' => 'Enable M101 Widgets',
-    'unflag_long' => 'Enable the M101 Widgets on this node',
-    'unflag_message' => 'The M101 Widgets have been enabled on this node',
-    'unflag_denied_text' => '',
-    'link_type' => 'toggle',
-    'weight' => 0,
-    'show_in_links' => array(
-      'full' => 1,
-      'token' => 0,
-    ),
-    'show_as_field' => 0,
-    'show_on_form' => 1,
-    'access_author' => '',
-    'show_contextual_link' => 0,
-    'show_on_profile' => 0,
-    'access_uid' => '',
-    'api_version' => 3,
-  );
+
+  // Before adding the flag to control M101 widgets check the module that
+  // sets up the context is installed.
+  if (module_exists('site_monetizer101')) {
+
+    $flags['disable_monetizer_widgets'] = array(
+      'entity_type' => 'node',
+      'title' => 'Disable M101 Widgets',
+      'global' => 1,
+      'types' => variable_get('dennis_layout_flag_disable_m_widget_nodes', array(
+        'article',
+        'review',
+      )),
+      'flag_short' => 'Disable M101 Widgets',
+      'flag_long' => 'Disable the M101 Widgets on this node',
+      'flag_message' => 'M101 Widgets have been disabled on this node',
+      'unflag_short' => 'Enable M101 Widgets',
+      'unflag_long' => 'Enable the M101 Widgets on this node',
+      'unflag_message' => 'The M101 Widgets have been enabled on this node',
+      'unflag_denied_text' => '',
+      'link_type' => 'toggle',
+      'weight' => 0,
+      'show_in_links' => array(
+        'full' => 1,
+        'token' => 0,
+      ),
+      'show_as_field' => 0,
+      'show_on_form' => 1,
+      'access_author' => '',
+      'show_contextual_link' => 0,
+      'show_on_profile' => 0,
+      'access_uid' => '',
+      'api_version' => 3,
+    );
+  }
   return $flags;
 }
 
